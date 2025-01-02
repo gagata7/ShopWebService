@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wyszukiwanie produktów</title>
+</head>
+<body>
+  <h1>Wyszukiwanie produktów</h1>
+
+  <!-- Formularz wyszukiwania -->
+  <form action="/products/search" method="get">
+    <label for="query">Wprowadź nazwę lub opis produktu:</label>
+    <input type="text" id="query" name="query" value="<%= searchQuery %>" required>
+    <button type="submit">Szukaj</button>
+  </form>
+
+  <!-- Wyniki wyszukiwania -->
+  <% if (products.length > 0) { %>
+    <h2>Wyniki wyszukiwania:</h2>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nazwa</th>
+          <th>Opis</th>
+          <th>Cena</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(product => { %>
+          <tr>
+            <td><%= product.id %></td>
+            <td><%= product.name %></td>
+            <td><%= product.description %></td>
+            <td><%= product.price %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } else if (searchQuery) { %>
+    <p>Brak wyników dla "<%= searchQuery %>".</p>
+  <% } %>
+</body>
+</html>

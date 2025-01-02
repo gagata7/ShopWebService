@@ -2,11 +2,16 @@
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const path = require('path');
 const { Pool } = require('pg');
 
 // Konfiguracja aplikacji Express
 const app = express();
 const port = 3000;
+
+// Ustawianie EJS jako silnika widoków
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -70,25 +75,38 @@ initializeDatabase().then(() => console.log('Baza danych zainicjalizowana.'));
 // Routing
 
 app.get('/', async (req, res) => {
-    res.send('Witaj w sklepie internetowym!');
+    res.sendFile(path.join(__dirname, 'views/index.html'));
 });
 
 
 // Przeglądanie produktów
 app.get('/products', async (req, res) => {
-  const { rows } = await pool.query('SELECT * FROM products');
-  res.json(rows);
+    try {
+        const { rows } = await pool.query('SELECT * FROM products');
+        res.render('products', { products: rows });
+    } catch (err) {
+        res.status(500).send('Błąd pobierania produktów: ' + err.message);
+    }
 });
 
 // Wyszukiwanie produktów
 app.get('/products/search', async (req, res) => {
   const { query } = req.query;
-  const { rows } = await pool.query(
-    'SELECT * FROM products WHERE name ILIKE $1 OR description ILIKE $1',
-    [`%${query}%`]
-  );
-  res.json(rows);
+  try {
+    let matchingProducts = [];
+    if (query) {
+      const { rows } = await pool.query(
+        'SELECT * FROM products WHERE name ILIKE $1 OR description ILIKE $1',
+        [`%${query}%`]
+      );
+      matchingProducts = rows;
+    }
+    res.render('product_search', { products: matchingProducts, searchQuery: query || '' });
+  } catch (err) {
+    res.status(500).send('Błąd wyszukiwania produktów: ' + err.message);
+  }
 });
+
 
 // Rejestracja użytkownika
 app.post('/register', async (req, res) => {
@@ -130,6 +148,77 @@ app.post('/cart', async (req, res) => {
     [req.session.user.id, productId, quantity || 1]
   );
   res.send('Produkt dodany do koszyka.');
+});
+
+// Wylistowanie wszystkich użytkowników
+app.get('/users', async (req, res) => {
+    const { rows } = await pool.query('SELECT * FROM users');
+    res.json(rows);
+});
+
+
+// Dodawanie produktu
+app.post('/products/add', async (req, res) => {
+    const { name, description, price } = req.body;
+    try {
+        const { rows } = await pool.query(
+            'INSERT INTO products (name, description, price) VALUES ($1, $2, $3)',
+            [name, description, price]
+        );
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        res.status(400).send('Błąd dodawania produktu: ' + err.message);
+    }
+});
+
+// Usuwanie produktu
+app.delete('/products/delete:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM products WHERE id = $1', [id]);
+        res.status(204).send();
+    } catch (err) {
+        res.status(400).send('Błąd usuwania produktu: ' + err.message);
+    }
+});
+
+// Edycja produktu
+app.put('/products/edit:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, description, price } = req.body;
+    try {
+        await pool.query(
+            'UPDATE products SET name = $1, description = $2, price = $3 WHERE id = $4',
+            [name, description, price, id]
+        );
+        res.send('Produkt zaktualizowany.');
+    } catch (err) {
+        res.status(400).send('Błąd edycji produktu: ' + err.message);
+    }
+});
+
+// Sprawdź złożone zamówienia
+app.get('/orders', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send('Musisz być zalogowany.');
+  }
+  const { rows } = await pool.query(
+    'SELECT * FROM orders WHERE user_id = $1',
+    [req.session.user.id]
+  );
+  res.json(rows);
+});
+
+// Sprawdź otwarte zamówienia
+app.get('/orders/open', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send('Musisz być zalogowany.');
+  }
+  const { rows } = await pool.query(
+    'SELECT * FROM orders WHERE user_id = $1 AND closed_at IS NULL',
+    [req.session.user.id]
+  );
+  res.json(rows);
 });
 
 // Uruchamianie serwera
