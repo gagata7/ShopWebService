@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista użytkowników</title>
+</head>
+<body>
+  <h1>Lista użytkowników</h1>
+
+  <% if (users.length === 0) { %>
+    <p>Brak użytkowników w systemie.</p>
+  <% } else { %>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nazwa użytkownika</th>
+          <th>Hasło</th>
+          <th>Uprawnienia administratora</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(user => { %>
+          <tr>
+            <td><%= user.id %></td>
+            <td><%= user.username %></td>
+            <td><%= user.password %></td>
+            <td><%= user.is_admin %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+  <br>
+  <a href="/">Powrót do strony głównej</a>
+</body>
+</html>

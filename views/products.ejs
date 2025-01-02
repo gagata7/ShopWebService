@@ -3,29 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lista produktów</title>
+  <title>Produkty</title>
 </head>
 <body>
-  <h1>Lista produktów</h1>
-  <table border="1">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nazwa</th>
-        <th>Opis</th>
-        <th>Cena</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% products.forEach(product => { %>
+  <h1>Produkty</h1>
+
+  <% if (products.length === 0) { %>
+    <p>Brak produktów w sklepie.</p>
+  <% } else { %>
+    <table border="1">
+      <thead>
         <tr>
-          <td><%= product.id %></td>
-          <td><%= product.name %></td>
-          <td><%= product.description %></td>
-          <td><%= product.price %></td>
+          <th>Nazwa</th>
+          <th>Cena</th>
+          <th>Opis</th>
+          <th>Akcja</th>
         </tr>
-      <% }); %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% products.forEach(product => { %>
+          <tr>
+            <td><%= product.id %></td>
+            <td><%= product.name %></td>
+            <td><%= product.price %> zł</td>
+            <td><%= product.description %></td>
+            <td>
+              <% if (user) { %> <!-- Sprawdzamy, czy użytkownik jest zalogowany -->
+                <form action="/cart/add" method="POST">
+                  <input type="hidden" name="productId" value="<%= product.id %>">
+                  <input type="number" name="quantity" value="1" min="1" required>
+                  <button type="submit">Dodaj do koszyka</button>
+                </form>
+              <% } else { %>
+                <p>Musisz być zalogowany, aby dodać do koszyka.</p>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+  <br>
+  <a href="/">Powrót do strony głównej</a>
 </body>
 </html>

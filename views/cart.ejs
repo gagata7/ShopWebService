@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koszyk</title>
+</head>
+<body>
+  <h1>Twoje produkty w koszyku</h1>
+
+  <% if (products.length === 0) { %>
+    <p>Twój koszyk jest pusty.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Nazwa</th>
+          <th>Cena</th>
+          <th>Ilość</th>
+          <th>Razem</th>
+          <th>Akcja</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% let totalPrice = 0; %> <!-- Inicjalizujemy zmienną na całkowitą cenę -->
+        <% products.forEach(product => { %>
+          <tr>
+            <td><%= product.name %></td>
+            <td><%= product.price %> zł</td>
+            <td><%= product.quantity %></td>
+            <td><%= (product.price * product.quantity).toFixed(2) %> zł</td>
+            <td>
+              <form action="/cart/remove" method="post" style="display:inline;">
+                <input type="hidden" name="productId" value="<%= product.product_id %>">
+                <button type="submit">Usuń</button>
+              </form>
+            </td>
+          </tr>
+          <% totalPrice += product.price * product.quantity; %> <!-- Dodajemy do całkowitej ceny -->
+        <% }) %>
+      </tbody>
+    </table>
+
+    <h3>Łączna cena: <%= totalPrice.toFixed(2) %> zł</h3>
+
+    <a href="/checkout">Przejdź do kasy</a>
+  <% } %>
+
+  <br>
+  <a href="/">Powrót do strony głównej</a>
+</body>
+</html>

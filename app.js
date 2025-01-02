@@ -19,7 +19,10 @@ app.use(bodyParser.json());
 app.use(session({
   secret: 'sekret',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
+  cookie: { 
+    maxAge: 6000000 // Użytkownik jest ZALOGOWANY przez 60 sekund
+  }
 }));
 
 // Konfiguracja bazy danych PostgreSQL
@@ -83,7 +86,8 @@ app.get('/', async (req, res) => {
 app.get('/products', async (req, res) => {
     try {
         const { rows } = await pool.query('SELECT * FROM products');
-        res.render('products', { products: rows });
+        const user = req.session.user;
+        res.render('products', { products: rows, user: user });
     } catch (err) {
         res.status(500).send('Błąd pobierania produktów: ' + err.message);
     }
@@ -109,6 +113,10 @@ app.get('/products/search', async (req, res) => {
 
 
 // Rejestracja użytkownika
+app.get('/register', async (req, res) => {
+    res.render('register');
+});
+
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -123,6 +131,10 @@ app.post('/register', async (req, res) => {
 });
 
 // Logowanie użytkownika
+app.get('/login', async (req, res) => {
+    res.render('login');
+});
+
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const { rows } = await pool.query(
@@ -137,28 +149,89 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Wyświetlanie koszyka
+app.get('/cart', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).send('Musisz być zalogowany.');
+    }
+    try {
+        const { rows } = await pool.query(
+            'SELECT products.*, carts.quantity FROM products JOIN carts ON products.id = carts.product_id WHERE carts.user_id = $1',
+            [req.session.user.id]
+        );
+        res.render('cart', { products: rows });
+    } catch (err) {
+        res.status(500).send('Błąd pobierania koszyka: ' + err.message);
+    }
+});
+
+
 // Dodawanie produktu do koszyka
-app.post('/cart', async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).send('Musisz być zalogowany.');
-  }
-  const { productId, quantity } = req.body;
-  await pool.query(
-    'INSERT INTO carts (user_id, product_id, quantity) VALUES ($1, $2, $3)',
-    [req.session.user.id, productId, quantity || 1]
-  );
-  res.send('Produkt dodany do koszyka.');
+app.get('/cart/add', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).send('Musisz być zalogowany.');
+    }
+    res.render('add_to_cart');
+});
+
+app.post('/cart/add', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).send('Musisz być zalogowany.');
+    }
+    const { productId, quantity } = req.body;
+    try {
+        await pool.query(
+            'INSERT INTO carts (user_id, product_id, quantity) VALUES ($1, $2, $3)',
+            [req.session.user.id, productId, quantity || 1]
+        );
+    res.send('Produkt dodany do koszyka.');
+    } catch (err) {
+        res.status(400).send('Błąd dodawania produktu do koszyka: ' + err.message);
+    }
+});
+
+// Usunięcie produktów z koszyka
+app.get('/cart/remove', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).send('Musisz być zalogowany.');
+    }
+    res.render('remove_from_cart');
+});
+
+app.post('/cart/remove', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).send('Musisz być zalogowany.');
+    }
+    const { productId } = req.body;
+    try {
+        await pool.query(
+            'DELETE FROM carts WHERE user_id = $1 AND product_id = $2',
+            [req.session.user.id, productId]
+        );
+        res.send('Produkt usunięty z koszyka.');
+    } catch (err) {
+        res.status(400).send('Błąd usuwania produktu z koszyka: ' + err.message);
+    }
 });
 
 // Wylistowanie wszystkich użytkowników
 app.get('/users', async (req, res) => {
-    const { rows } = await pool.query('SELECT * FROM users');
-    res.json(rows);
+    try {
+        const { rows } = await pool.query('SELECT * FROM users');
+        res.render('users', { users: rows });
+    } catch (err) {
+        res.status(500).send('Błąd pobierania użytkowników: ' + err.message);
+    }
 });
 
 
 // Dodawanie produktu
+app.get('/products/add', async (req, res) => {
+    res.render('add_product');
+});
+
 app.post('/products/add', async (req, res) => {
+    console.log(req.body);
     const { name, description, price } = req.body;
     try {
         const { rows } = await pool.query(
@@ -172,18 +245,26 @@ app.post('/products/add', async (req, res) => {
 });
 
 // Usuwanie produktu
-app.delete('/products/delete:id', async (req, res) => {
-    const { id } = req.params;
+app.get('/products/remove', async (req, res) => {
+    res.render('delete_product');
+});
+
+app.post('/products/remove', async (req, res) => {
+    const { productId } = req.body;
     try {
-        await pool.query('DELETE FROM products WHERE id = $1', [id]);
-        res.status(204).send();
+        // Najpierw usuń powiązane rekordy z tabeli carts
+        await pool.query('DELETE FROM carts WHERE product_id = $1', [productId]);
+
+        // Teraz usuń produkt z tabeli products
+        await pool.query('DELETE FROM products WHERE id = $1', [productId]);
+        res.redirect('/products');
     } catch (err) {
         res.status(400).send('Błąd usuwania produktu: ' + err.message);
     }
 });
 
 // Edycja produktu
-app.put('/products/edit:id', async (req, res) => {
+app.put('/products/edit', async (req, res) => {
     const { id } = req.params;
     const { name, description, price } = req.body;
     try {

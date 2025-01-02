@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuń produkt</title>
+</head>
+<body>
+  <h1>Usuń produkt z bazy towarów</h1>
+
+  <form action="/products/remove" method="post">
+    <label for="productId">ID produktu do usunięcia:</label>
+    <input type="number" id="productId" name="productId" required>
+    <br><br>
+
+    <button type="submit">Usuń produkt</button>
+  </form>
+
+  <a href="/cart">Powrót do koszyka</a>
+</body>
+</html>
