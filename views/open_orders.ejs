@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Otwarte zamówienia</title>
+  <title>Open orders</title>
 </head>
 <body>
-  <h1>Otwarte zamówienia</h1>
+  <h1>Open orders, still in the user's carts</h1>
 
   <% if (orders.length === 0) { %>
-    <p>Brak otwartych zamówień.</p>
+    <p>There are no open orders now.</p>
   <% } else { %>
     <table border="1">
       <thead>
         <tr>
-          <th>Użytkownik</th>
-          <th>Produkt</th>
-          <th>Opis</th>
-          <th>Cena</th>
-          <th>Ilość</th>
-          <th>Razem</th>
+          <th>Username</th>
+          <th>Product</th>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
         </tr>
       </thead>
       <tbody>

@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Produkty</title>
+  <title>Products</title>
 </head>
 <body>
-  <h1>Produkty</h1>
+  <h1>List of available products</h1>
 
   <% if (products.length === 0) { %>
-    <p>Brak produktów w sklepie.</p>
+    <p>No products are currently in the offer.</p>
   <% } else { %>
     <table border="1">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Nazwa</th>
-          <th>Cena</th>
-          <th>Opis</th>
-          <th>Akcja</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Description</th>
+          <th>Add to cart</th>
         </tr>
       </thead>
       <tbody>
@@ -29,14 +29,14 @@
             <td><%= product.price %> zł</td>
             <td><%= product.description %></td>
             <td>
-              <% if (user) { %> <!-- Sprawdzamy, czy użytkownik jest zalogowany -->
+              <% if (user) { %>
                 <form action="/cart/add" method="POST">
                   <input type="hidden" name="productId" value="<%= product.id %>">
                   <input type="number" name="quantity" value="1" min="1" required>
-                  <button type="submit">Dodaj do koszyka</button>
+                  <button type="submit">Add</button>
                 </form>
               <% } else { %>
-                <p>Musisz być zalogowany, aby dodać do koszyka.</p>
+                <p>You need to be logged in to add to a cart</p>
               <% } %>
             </td>
           </tr>
@@ -46,6 +46,6 @@
   <% } %>
 
   <br>
-  <a href="/">Powrót do strony głównej</a>
+  <a href="/">Back to the index page</a>
 </body>
 </html>

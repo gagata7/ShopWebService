@@ -23,9 +23,11 @@ password: *localhost*
     - przeglądanie listy użytkowników (dla admina) [DONE]
     - przeglądanie listy złożonych/otwartych zamówień (dla admina) [DONE]
 
-- add endpoint /chechout for paying and completing the cart
-- create views for all endpoints
+- add endpoint /chechout for paying and completing the cart [DONE]
+- create views for all endpoints [DONE]
+
 - change availability of endpoints for admin, anonymous/logged user respectively
+
 - translate polish to english (comments and code fragments)
 - add any hardcoded data to gitignore and hide it in files
 - add to readmd and start page some info about shop and its endpoints
@@ -36,3 +38,6 @@ password: *localhost*
 z komunikatem o wylogowaniu
 - pomyśl jak to można graficznie jakoś ładnie zrobić
 - zrób ładny index page
+- usuń niepotrzebne metody get
+- co jak dodam produkt o tych samych parametrach co juz istniejacy w bazie
+- zrób, żeby nie dało się chechoutować pustego koszyka

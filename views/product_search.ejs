@@ -3,28 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wyszukiwanie produktów</title>
+  <title>Search</title>
 </head>
 <body>
-  <h1>Wyszukiwanie produktów</h1>
+  <h1>Looking for a certain product in our offer?</h1>
+  <p>Try using the search form below:</p>
+  <p>(It lists all product of name or description with matching phrase)</p>
+
 
   <!-- Formularz wyszukiwania -->
   <form action="/products/search" method="get">
-    <label for="query">Wprowadź nazwę lub opis produktu:</label>
+    <label for="query">Enter phrase</label>
     <input type="text" id="query" name="query" value="<%= searchQuery %>" required>
-    <button type="submit">Szukaj</button>
+    <button type="submit">Search</button>
   </form>
 
   <!-- Wyniki wyszukiwania -->
   <% if (products.length > 0) { %>
-    <h2>Wyniki wyszukiwania:</h2>
+    <h2>Results:</h2>
     <table border="1">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Nazwa</th>
-          <th>Opis</th>
-          <th>Cena</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Price</th>
         </tr>
       </thead>
       <tbody>
@@ -39,7 +42,7 @@
       </tbody>
     </table>
   <% } else if (searchQuery) { %>
-    <p>Brak wyników dla "<%= searchQuery %>".</p>
+    <p>No results found for "<%= searchQuery %>".</p>
   <% } %>
 </body>
 </html>

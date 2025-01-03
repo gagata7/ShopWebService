@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wszystkie złożone zamówienia</title>
+  <title>Placed orders</title>
 </head>
 <body>
-  <h1>Wszystkie złożone zamówienia</h1>
+  <h1>All placed orders, already submitted by users</h1>
   <% if (orders.length > 0) { %>
     <ul>
       <% let currentOrderId = null; %>
       <% orders.forEach(order => { %>
         <% if (currentOrderId !== order.order_id) { %>
           <% currentOrderId = order.order_id; %>
-          <h2>Zamówienie ID: <%= order.order_id %> (Użytkownik: <%= order.user_name %>)</h2>
-          <p>Data: <%= new Date(order.created_at).toLocaleString() %></p>
+          <h2>Order ID: <%= order.order_id %> (User: <%= order.user_name %>)</h2>
+          <p>Date: <%= new Date(order.created_at).toLocaleString() %></p>
         <% } %>
         <li>
-          Produkt: <%= order.product_name %><br>
-          Opis: <%= order.product_description %><br>
-          Cena: <%= order.product_price.toFixed(2) %> zł<br>
-          Ilość: <%= order.quantity %>
+          Product: <%= order.product_name %><br>
+          Description: <%= order.product_description %><br>
+          Price: <%= (Number(order.product_price)).toFixed(2) %> zł<br>
+          Quantity: <%= order.quantity %>
         </li>
       <% }) %>
     </ul>
   <% } else { %>
-    <p>Brak złożonych zamówień.</p>
+    <p>There are no placed orders now.</p>
   <% } %>
 </body>
 </html>

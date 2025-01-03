@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lista użytkowników</title>
+  <title>Users</title>
 </head>
 <body>
-  <h1>Lista użytkowników</h1>
+  <h1>List of all users registered in the database</h1>
 
   <% if (users.length === 0) { %>
-    <p>Brak użytkowników w systemie.</p>
+    <p>No users in the database.</p>
   <% } else { %>
     <table border="1">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Nazwa użytkownika</th>
-          <th>Hasło</th>
-          <th>Uprawnienia administratora</th>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Privileged</th>
         </tr>
       </thead>
       <tbody>
@@ -34,6 +34,6 @@
   <% } %>
 
   <br>
-  <a href="/">Powrót do strony głównej</a>
+  <a href="/">Back to the index page</a>
 </body>
 </html>
