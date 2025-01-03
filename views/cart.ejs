@@ -43,16 +43,16 @@
 
     <h3>In total: <%= totalPrice.toFixed(2) %> zł</h3>
 
+    <form action="/checkout" method="post">
+      <% if (products.length != 0) { %>
+        <button type="submit">Place an order</button>
+      <% } else { %>
+        <p>You cannot place an order with an empty cart!</p>
+      <% } %>
+    </form>
+
   <% } %>
   <br>
-
-  <form action="/checkout" method="post">
-    <% if (products.length === 0) { %>
-      <button type="submit">Place an order</button>
-    <% } else { %>
-      <p>You cannot place an order with an empty cart!</p>
-    <% } %>
-  </form>
   
   <br>
   <a href="/products">Back to products list</a>

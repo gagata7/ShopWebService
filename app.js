@@ -3,6 +3,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
 const methodOverride = require('method-override');
+const bcrypt = require('bcryptjs');
 const { Pool } = require('pg');
 
 const app = express();
@@ -21,7 +22,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: { 
-    maxAge: 60000 // user will be logged out after 1 minute
+    maxAge: 600000 // user will be logged out after 10 minutes
   }
 }));
 
@@ -33,6 +34,19 @@ const pool = new Pool({
   password: 'haslo',
   port: 5432,
 });
+
+// password encryption
+async function hashPassword(password) {
+  const salt = await bcrypt.genSalt(10);
+  const hashed = await bcrypt.hash(password, salt);
+  return hashed;
+}
+
+// password verification
+async function verifyPassword(password, hashed) {
+  const isMatching = await bcrypt.compare(password, hashed);
+  return isMatching;
+}
 
 // setting up the whole database with its tables
 async function initializeDatabase() {
@@ -121,7 +135,7 @@ app.post('/register', async (req, res) => {
   try {
     await pool.query(
       'INSERT INTO users (username, password) VALUES ($1, $2)',
-      [username, password]
+      [username, await hashPassword(password)]
     );
     res.status(201).send('User registered successfully.');
   } catch (err) {
@@ -137,10 +151,10 @@ app.get('/login', async (req, res) => {
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const { rows } = await pool.query(
-    'SELECT * FROM users WHERE username = $1 AND password = $2',
-    [username, password]
+    'SELECT * FROM users WHERE username = $1',
+    [username]
   );
-  if (rows.length > 0) {
+  if (rows.length > 0 && await verifyPassword(password, rows[0].password)) {
     req.session.user = rows[0];
     res.redirect('/products');
   } else {
@@ -203,6 +217,9 @@ app.post('/cart/remove', async (req, res) => {
 
 // listing all users in the database
 app.get('/users', async (req, res) => {
+    if (!req.session.user || !req.session.user.is_admin) {
+        return res.status(401).send('Content available only for privileged users.');
+    }
     try {
         const { rows } = await pool.query('SELECT * FROM users');
         res.render('users', { users: rows });
@@ -214,28 +231,40 @@ app.get('/users', async (req, res) => {
 
 // adding a new product to the database
 app.get('/products/add', async (req, res) => {
-    res.render('add_product');
+  if (!req.session.user || !req.session.user.is_admin) {
+    return res.status(401).send('Content available only for privileged users.');
+  }
+  res.render('add_product');
 });
 
 app.post('/products/add', async (req, res) => {
-    const { name, description, price } = req.body;
-    try {
-      await pool.query(
-          'INSERT INTO products (name, description, price) VALUES ($1, $2, $3)',
-          [name, description, price]
-      );
-      res.redirect('/products');
-    } catch (err) {
-        res.status(400).send('Error:' + err.message);
-    }
+  if (!req.session.user || !req.session.user.is_admin) {
+    return res.status(401).send('Content available only for privileged users.');
+  }
+  const { name, description, price } = req.body;
+  try {
+    await pool.query(
+        'INSERT INTO products (name, description, price) VALUES ($1, $2, $3)',
+        [name, description, price]
+    );
+    res.redirect('/products');
+  } catch (err) {
+      res.status(400).send('Error:' + err.message);
+  }
 });
 
 // removing a product from the whole database
 app.get('/products/remove', async (req, res) => {
+    if (!req.session.user || !req.session.user.is_admin) {
+        return res.status(401).send('Content available only for privileged users.');
+    }
     res.render('delete_product');
 });
 
 app.post('/products/remove', async (req, res) => {
+    if (!req.session.user || !req.session.user.is_admin) {
+        return res.status(401).send('Content available only for privileged users.');
+    }
     const { productId } = req.body;
     try {
         // first, remove the product from the carts
@@ -250,7 +279,10 @@ app.post('/products/remove', async (req, res) => {
 });
 
 // editing a product
-app.get('/products/edit:id', async (req, res) => {
+app.get('/products/edit/:id', async (req, res) => {
+    if (!req.session.user || !req.session.user.is_admin) {
+      return res.status(401).send('Content available only for privileged users.');
+    }
     const { id } = req.params;
     try {
         const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
@@ -261,6 +293,9 @@ app.get('/products/edit:id', async (req, res) => {
 });
 
 app.put('/products/edit', async (req, res) => {
+    if (!req.session.user || !req.session.user.is_admin) {
+      return res.status(401).send('Content available only for privileged users.');
+    }
     const { productId, name, description, price } = req.body;
     try {
         await pool.query(
@@ -275,9 +310,9 @@ app.put('/products/edit', async (req, res) => {
 
 // list submitted orders
 app.get('/admin/placed', async (req, res) => {
-  // if (!req.session.user) {
-  //   return res.status(401).send('Musisz być zalogowany.');
-  // }
+  if (!req.session.user || !req.session.user.is_admin) {
+    return res.status(401).send('Content available only for privileged users.');
+  }
   try {
     const { rows } = await pool.query(
       `SELECT 
@@ -303,9 +338,9 @@ app.get('/admin/placed', async (req, res) => {
 
 // list open orders (still in carts but not submitted)
 app.get('/admin/open', async (req, res) => {
-  // if (!req.session.user) {
-  //   return res.status(401).send('Musisz być zalogowany.');
-  // }
+  if (!req.session.user || !req.session.user.is_admin) {
+    return res.status(401).send('Content available only for privileged users.');
+  }
   try {
     const { rows } = await pool.query(
       `SELECT 
@@ -360,6 +395,7 @@ app.post('/checkout', async (req, res) => {
     res.status(500).send('Error: ' + err.message);
   }
 });
+
 
 // run the server (with new, cleared session)
 app.listen(port, () => {

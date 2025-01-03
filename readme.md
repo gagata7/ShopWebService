@@ -19,9 +19,13 @@ password: *localhost*
 - add endpoint /chechout for paying and completing the cart [DONE]
 - create views for all endpoints [DONE]
 
-- change availability of endpoints for admin, anonymous/logged user respectively
+- change availability of endpoints for admin, anonymous/logged user respectively [DONE]
 
-- add password encryptions
+- translate polish to english (comments and code fragments) [DONE]
+
+- add password encryptions [DONE]
+
+- jak zrobić cenę po przecinku z dokładnością do 2 miejsc [DONE]
 
 - split code from app.js to more short files
 
@@ -31,6 +35,6 @@ password: *localhost*
 
 - add any hardcoded data to gitignore and hide it in files
 
-- pomyśl jak to można graficznie jakoś ładnie zrobić
+- dodaj pakiety potrzebne do instalacji do readme
 
-- translate polish to english (comments and code fragments) [DONE]
+- sformatuj ładnie kod

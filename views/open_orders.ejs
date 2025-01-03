@@ -24,7 +24,7 @@
         <% orders.forEach(order => { %>
           <tr>
             <td><%= order.user_name %></td>
-            <td><%= Number(order.total_price).toFixed(2) %> zł</td> 
+            <td><%= order.total_price %> zł</td> 
             <td><%= order.total_quantity %></td> 
             <td><%= order.product_ids.join(', ') %></td>
           </tr>
