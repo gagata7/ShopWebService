@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
+const methodOverride = require('method-override');
 const { Pool } = require('pg');
 
 // Konfiguracja aplikacji Express
@@ -16,6 +17,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(methodOverride('_method'));
 app.use(session({
   secret: 'sekret',
   resave: false,
@@ -238,7 +240,7 @@ app.post('/products/add', async (req, res) => {
             'INSERT INTO products (name, description, price) VALUES ($1, $2, $3)',
             [name, description, price]
         );
-        res.status(201).json(rows[0]);
+        res.redirect('/products');
     } catch (err) {
         res.status(400).send('Błąd dodawania produktu: ' + err.message);
     }
@@ -264,15 +266,24 @@ app.post('/products/remove', async (req, res) => {
 });
 
 // Edycja produktu
-app.put('/products/edit', async (req, res) => {
+app.get('/products/edit:id', async (req, res) => {
     const { id } = req.params;
-    const { name, description, price } = req.body;
+    try {
+        const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+        res.render('edit_product', { product: rows[0] });
+    } catch (err) {
+        res.status(400).send('Błąd pobierania produktu: ' + err.message);
+    }
+});
+
+app.put('/products/edit', async (req, res) => {
+    const { productId, name, description, price } = req.body;
     try {
         await pool.query(
             'UPDATE products SET name = $1, description = $2, price = $3 WHERE id = $4',
-            [name, description, price, id]
+            [name, description, price, productId]
         );
-        res.send('Produkt zaktualizowany.');
+        res.redirect('/products');
     } catch (err) {
         res.status(400).send('Błąd edycji produktu: ' + err.message);
     }

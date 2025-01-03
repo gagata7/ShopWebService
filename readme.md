@@ -35,3 +35,4 @@ password: *localhost*
 - dodaj przekierowywanie na stronę główna po automatycznym wylogowaniu
 z komunikatem o wylogowaniu
 - pomyśl jak to można graficznie jakoś ładnie zrobić
+- zrób ładny index page

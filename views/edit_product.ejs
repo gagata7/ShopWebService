@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edytuj produkt</title>
+</head>
+<body>
+  <h1>Edytuj produkt</h1>
+
+  <form action="/products/edit?_method=PUT" method="POST">
+    <input type="hidden" name="productId" value="<%= product.id %>">
+    <label for="name">Nazwa produktu:</label>
+    <input type="text" id="name" name="name" value="<%= product.name %>" required>
+    
+    <label for="description">Opis:</label>
+    <textarea id="description" name="description" required><%= product.description %></textarea>
+    
+    <label for="price">Cena:</label>
+    <input type="number" id="price" name="price" value="<%= product.price %>" required>
+    
+    <button type="submit">Zaktualizuj produkt</button>
+  </form>
+  
+
+  <br>
+  <a href="/products">Powrót do przeglądania produktów</a>
+</body>
+</html>
