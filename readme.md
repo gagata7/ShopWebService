@@ -84,8 +84,3 @@ Functions interracting with `users` table, are in `user.js`
 
   - `/users/register/` prints basic registration form (with username and password)
   - `/users/login/` prints logging form
-
-  <br>
-  <br>
-  <br>
-  <br>
