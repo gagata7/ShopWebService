@@ -3,7 +3,7 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
 const methodOverride = require("method-override");
-const pool = require("./config/db_setup");
+const pool = require("./config/db_setup"); // setup the databas first
 
 const app = express();
 const port = 3000;
@@ -22,7 +22,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 600000, // user will be logged out after 10 minutes
+      maxAge: 300000, // user will be logged out after 5 minutes
     },
   })
 );

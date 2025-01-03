@@ -2,10 +2,10 @@ const { Pool } = require("pg");
 
 // postgreSQL database configuration
 const pool = new Pool({
-  user: "admin",
-  host: "localhost",
-  database: "shop_webservice",
-  password: "haslo",
+  user: "",
+  host: "",
+  database: "",
+  password: "",
   port: 5432,
 });
 
