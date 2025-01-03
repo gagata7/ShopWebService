@@ -89,11 +89,3 @@ Functions interracting with `users` table, are in `user.js`
   <br>
   <br>
   <br>
-
-# **TO DO:**
-
-- add some error handlers and pretty informing comment for user
-
-- add any hardcoded data to gitignore and hide it in files
-
-- dodaj pakiety potrzebne do instalacji do readme
