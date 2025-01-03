@@ -1,20 +1,20 @@
 **Shop Webservice Project**
 
-
 **About shop**
-Run psql console: *psql -U admin -h localhost -d shop_webservice*
-password: *localhost*
+Run psql console: _psql -U admin -h localhost -d shop_webservice_
+password: _localhost_
 
 **TO DO:**
+
 - initialize server [DONE]
 - install and configure database [DONE]
 - create needed tables (Users, Products, Carts etc.) [DONE]
 
-
 - create endpoints:
-    - dodawanie, modyfikacja, usuwanie towarów (dla admina) [DONE]
-    - przeglądanie listy użytkowników (dla admina) [DONE]
-    - przeglądanie listy złożonych/otwartych zamówień (dla admina) [DONE]
+
+  - dodawanie, modyfikacja, usuwanie towarów (dla admina) [DONE]
+  - przeglądanie listy użytkowników (dla admina) [DONE]
+  - przeglądanie listy złożonych/otwartych zamówień (dla admina) [DONE]
 
 - add endpoint /chechout for paying and completing the cart [DONE]
 - create views for all endpoints [DONE]
@@ -38,3 +38,5 @@ password: *localhost*
 - dodaj pakiety potrzebne do instalacji do readme
 
 - sformatuj ładnie kod
+
+- jak zrobic zeby w nowym oknie sie nowa, niezalezna sesja odpalała ze sklepem
