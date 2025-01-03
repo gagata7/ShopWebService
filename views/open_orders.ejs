@@ -15,22 +15,18 @@
       <thead>
         <tr>
           <th>Username</th>
-          <th>Product</th>
-          <th>Description</th>
-          <th>Price</th>
-          <th>Quantity</th>
-          <th>Total</th>
+          <th>Total Price</th>
+          <th>Total Quantity</th>
+          <th>Product IDs</th>
         </tr>
       </thead>
       <tbody>
         <% orders.forEach(order => { %>
           <tr>
             <td><%= order.user_name %></td>
-            <td><%= order.product_name %></td>
-            <td><%= order.product_description %></td>
-            <td><%= order.product_price %> zł</td>
-            <td><%= order.quantity %></td>
-            <td><%= (order.product_price * order.quantity).toFixed(2) %> zł</td>
+            <td><%= Number(order.total_price).toFixed(2) %> zł</td> 
+            <td><%= order.total_quantity %></td> 
+            <td><%= order.product_ids.join(', ') %></td>
           </tr>
         <% }) %>
       </tbody>

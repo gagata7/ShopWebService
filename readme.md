@@ -10,13 +10,6 @@ password: *localhost*
 - install and configure database [DONE]
 - create needed tables (Users, Products, Carts etc.) [DONE]
 
-- create models of:
-    - anonymous user
-    - user
-    - admin
-    - product
-    - basket
-
 
 - create endpoints:
     - dodawanie, modyfikacja, usuwanie towarów (dla admina) [DONE]
@@ -28,16 +21,16 @@ password: *localhost*
 
 - change availability of endpoints for admin, anonymous/logged user respectively
 
-- translate polish to english (comments and code fragments)
-- add any hardcoded data to gitignore and hide it in files
-- add to readmd and start page some info about shop and its endpoints
-- split code from app.js to more short files
-- add some error handlers and pretty informing comment for user
 - add password encryptions
-- dodaj przekierowywanie na stronę główna po automatycznym wylogowaniu
-z komunikatem o wylogowaniu
+
+- split code from app.js to more short files
+
+- add to readmd and start page some info about shop and its endpoints
+
+- add some error handlers and pretty informing comment for user
+
+- add any hardcoded data to gitignore and hide it in files
+
 - pomyśl jak to można graficznie jakoś ładnie zrobić
-- zrób ładny index page
-- usuń niepotrzebne metody get
-- co jak dodam produkt o tych samych parametrach co juz istniejacy w bazie
-- zrób, żeby nie dało się chechoutować pustego koszyka
+
+- translate polish to english (comments and code fragments) [DONE]

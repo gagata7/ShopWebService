@@ -46,8 +46,8 @@ async function initializeDatabase() {
 
     CREATE TABLE IF NOT EXISTS products (
       id SERIAL PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      description TEXT NOT NULL,
+      name VARCHAR(100) NOT NULL UNIQUE,
+      description TEXT NOT NULL UNIQUE,
       price DECIMAL(10, 2) NOT NULL
     );
 
@@ -166,12 +166,6 @@ app.get('/cart', async (req, res) => {
 
 
 // adding up an item to the cart
-app.get('/cart/add', async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).send('Content available only for logged in users.');
-    }
-    res.render('add_to_cart');
-});
 
 app.post('/cart/add', async (req, res) => {
     if (!req.session.user) {
@@ -226,11 +220,11 @@ app.get('/products/add', async (req, res) => {
 app.post('/products/add', async (req, res) => {
     const { name, description, price } = req.body;
     try {
-        const { rows } = await pool.query(
-            'INSERT INTO products (name, description, price) VALUES ($1, $2, $3)',
-            [name, description, price]
-        );
-        res.redirect('/products');
+      await pool.query(
+          'INSERT INTO products (name, description, price) VALUES ($1, $2, $3)',
+          [name, description, price]
+      );
+      res.redirect('/products');
     } catch (err) {
         res.status(400).send('Error:' + err.message);
     }
@@ -280,7 +274,7 @@ app.put('/products/edit', async (req, res) => {
 });
 
 // list submitted orders
-app.get('/admin/orders', async (req, res) => {
+app.get('/admin/placed', async (req, res) => {
   // if (!req.session.user) {
   //   return res.status(401).send('Musisz być zalogowany.');
   // }
@@ -308,24 +302,23 @@ app.get('/admin/orders', async (req, res) => {
 });
 
 // list open orders (still in carts but not submitted)
-app.get('/admin/orders/open', async (req, res) => {
+app.get('/admin/open', async (req, res) => {
   // if (!req.session.user) {
   //   return res.status(401).send('Musisz być zalogowany.');
   // }
   try {
     const { rows } = await pool.query(
       `SELECT 
-          c.id AS cart_id,
-          c.user_id,
-          u.username AS user_name,
-          c.product_id,
-          p.name AS product_name,
-          p.description AS product_description,
-          p.price AS product_price,
-          c.quantity
-      FROM carts c
-      JOIN users u ON c.user_id = u.id
-      JOIN products p ON c.product_id = p.id`
+            c.user_id,
+            array_agg(c.product_id) AS product_ids,
+            u.username AS user_name,
+            SUM(p.price * c.quantity) AS total_price,
+            SUM(c.quantity) AS total_quantity
+        FROM carts c
+        JOIN products p ON c.product_id = p.id
+        JOIN users u ON c.user_id = u.id
+        GROUP BY c.user_id, u.username
+        ORDER BY user_name;`
     );
     res.render('open_orders', { orders: rows });
   } catch (err) {
@@ -339,12 +332,18 @@ app.post('/checkout', async (req, res) => {
     return res.status(401).send('Content available only for logged in users.');
   }
   try {
-    // create new order
+    // Check if cart is not empty
     const { rows } = await pool.query(
+      'SELECT * FROM carts WHERE user_id = $1',
+      [req.session.user.id]
+    );
+
+    // create new order
+    const { rows: newOrderRows} = await pool.query(
       'INSERT INTO orders (user_id) VALUES ($1) RETURNING id',
       [req.session.user.id]
     );
-    const orderId = rows[0].id;
+    const orderId = newOrderRows[0].id;
 
     // move cart items to order_items
     await pool.query(
