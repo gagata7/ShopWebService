@@ -1,29 +1,42 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit product</title>
-</head>
-<body>
-  <h1>Update product's name, description or price</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit product</title>
+  </head>
+  <body>
+    <h1>Update product's name, description or price</h1>
 
-  <form action="/products/edit?_method=PUT" method="POST">
-    <input type="hidden" name="productId" value="<%= product.id %>">
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" value="<%= product.name %>" required>
-    
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" required><%= product.description %></textarea>
-    
-    <label for="price">Price:</label>
-    <input type="float" id="price" name="price" value="<%= product.price %>" required>
-    
-    <button type="submit">Update</button>
-  </form>
-  
+    <form action="/products/edit?_method=PUT" method="POST">
+      <input type="hidden" name="productId" value="<%= product.id %>" />
+      <label for="name">Name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        value="<%= product.name %>"
+        required
+      />
 
-  <br>
-  <a href="/products">Back to products list</a>
-</body>
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" required>
+<%= product.description %></textarea
+      >
+
+      <label for="price">Price:</label>
+      <input
+        type="float"
+        id="price"
+        name="price"
+        value="<%= product.price %>"
+        required
+      />
+
+      <button type="submit">Update</button>
+    </form>
+
+    <br />
+    <a href="/products">Back to products list</a>
+  </body>
 </html>
