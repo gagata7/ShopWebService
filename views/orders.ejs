@@ -3,37 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Moje zamówienia</title>
+  <title>Wszystkie złożone zamówienia</title>
 </head>
 <body>
-  <h1>Twoje zamówienia</h1>
-
+  <h1>Wszystkie złożone zamówienia</h1>
   <% if (orders.length > 0) { %>
-    <table border="1">
-      <thead>
-        <tr>
-          <th>ID Zamówienia</th>
-          <th>Data</th>
-          <th>Status</th>
-          <th>Suma</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% orders.forEach(order => { %>
-          <tr>
-            <td><%= order.id %></td>
-            <td><%= new Date(order.created_at).toLocaleString() %></td>
-            <td><%= order.status %></td>
-            <td><%= order.total %> PLN</td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
+    <ul>
+      <% let currentOrderId = null; %>
+      <% orders.forEach(order => { %>
+        <% if (currentOrderId !== order.order_id) { %>
+          <% currentOrderId = order.order_id; %>
+          <h2>Zamówienie ID: <%= order.order_id %> (Użytkownik: <%= order.user_name %>)</h2>
+          <p>Data: <%= new Date(order.created_at).toLocaleString() %></p>
+        <% } %>
+        <li>
+          Produkt: <%= order.product_name %><br>
+          Opis: <%= order.product_description %><br>
+          Cena: <%= order.product_price.toFixed(2) %> zł<br>
+          Ilość: <%= order.quantity %>
+        </li>
+      <% }) %>
+    </ul>
   <% } else { %>
-    <p>Nie masz żadnych złożonych zamówień.</p>
+    <p>Brak złożonych zamówień.</p>
   <% } %>
-
-  <br>
-  <a href="/products">Powrót do produktów</a>
 </body>
 </html>

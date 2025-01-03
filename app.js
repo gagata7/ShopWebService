@@ -204,6 +204,7 @@ app.post('/cart/remove', async (req, res) => {
     if (!req.session.user) {
         return res.status(401).send('Musisz być zalogowany.');
     }
+    console.log(req.body);
     const { productId } = req.body;
     try {
         await pool.query(
@@ -290,27 +291,57 @@ app.put('/products/edit', async (req, res) => {
 });
 
 // Sprawdź złożone zamówienia
-app.get('/orders', async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).send('Musisz być zalogowany.');
+app.get('/admin/orders', async (req, res) => {
+  // if (!req.session.user) {
+  //   return res.status(401).send('Musisz być zalogowany.');
+  // }
+  try {
+    const { rows } = await pool.query(
+      `SELECT 
+          o.id AS order_id, 
+          o.user_id, 
+          u.username AS user_name, 
+          o.created_at, 
+          oi.product_id, 
+          p.name AS product_name, 
+          p.description AS product_description, 
+          p.price AS product_price, 
+          oi.quantity
+       FROM orders o
+       JOIN users u ON o.user_id = u.id
+       JOIN order_items oi ON o.id = oi.order_id
+       JOIN products p ON oi.product_id = p.id`
+    );
+    res.render('orders', { orders: rows });
+  } catch (err) {
+    res.status(500).send('Błąd pobierania zamówień: ' + err.message);
   }
-  const { rows } = await pool.query(
-    'SELECT * FROM orders WHERE user_id = $1',
-    [req.session.user.id]
-  );
-  res.json(rows);
 });
 
 // Sprawdź otwarte zamówienia
-app.get('/orders/open', async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).send('Musisz być zalogowany.');
+app.get('/admin/orders/open', async (req, res) => {
+  // if (!req.session.user) {
+  //   return res.status(401).send('Musisz być zalogowany.');
+  // }
+  try {
+    const { rows } = await pool.query(
+      `SELECT 
+          c.id AS cart_id,
+          c.user_id,
+          u.username AS user_name,
+          c.product_id,
+          p.name AS product_name,
+          p.description AS product_description,
+          p.price AS product_price,
+          c.quantity
+      FROM carts c
+      JOIN users u ON c.user_id = u.id
+      JOIN products p ON c.product_id = p.id`
+    );
+    res.render('open_orders', { orders: rows });
+  } catch (err) {
+    res.status(500).send('Błąd pobierania otwartych zamówień: ' + err.message);
   }
-  const { rows } = await pool.query(
-    'SELECT * FROM orders WHERE user_id = $1 AND closed_at IS NULL',
-    [req.session.user.id]
-  );
-  res.json(rows);
 });
 
 // Uruchamianie serwera
