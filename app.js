@@ -4,7 +4,7 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
 const methodOverride = require("method-override");
-const pool = require("./config/db_setup"); // setup the databas first
+const pool = require("./config/db_setup"); // setup the database first
 
 const app = express();
 
