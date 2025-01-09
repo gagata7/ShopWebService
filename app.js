@@ -1,3 +1,4 @@
+const http = require("http");
 const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
@@ -6,7 +7,6 @@ const methodOverride = require("method-override");
 const pool = require("./config/db_setup"); // setup the databas first
 
 const app = express();
-const port = 3000;
 
 // set ejs as view engine
 app.set("view engine", "ejs");
@@ -39,7 +39,12 @@ app.use("/", indexRoutes);
 app.use("/products", productRoutes);
 app.use("/users", userRoutes);
 
-// run the server (with new, cleared session)
-app.listen(port, () => {
-  console.log(`Shop Web Service is running at http://localhost:${port}`);
+// start the server and listen on port 3000
+server = http.createServer(app);
+server.listen(process.env.PORT || 3000, (err) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log("Server is running on http://localhost:3000");
+  }
 });
