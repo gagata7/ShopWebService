@@ -1,3 +1,5 @@
 /node_modules
 
 /config/pool_setup.js
+
+.env

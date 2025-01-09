@@ -1,12 +1,13 @@
 const { Pool } = require("pg");
+require("dotenv").config();
 
-// postgreSQL database configuration
+// postgreSQL database configuration from my .env file
 const pool = new Pool({
-  user: "",
-  host: "",
-  database: "",
-  password: "",
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: String(process.env.DB_NAME),
+  password: String(process.env.DB_PASS),
+  port: process.env.DB_PORT,
 });
 
 // setting up the whole database with its tables
