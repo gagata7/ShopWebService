@@ -4,57 +4,143 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Products</title>
+  <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: linear-gradient(to bottom, #230e6d, #4e4a84);
+        background-size: cover;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        margin: 0;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      p {
+        color: #3d266c;
+      }
+
+      a {
+        text-decoration: none;
+        color: #2f1060;
+        padding: 10px 15px;
+        border: 1px solid #3b1a78;
+        border-radius: 5px;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
+        display: inline-block;
+        margin: 5px 0;
+      }
+
+      a:hover {
+        background-color: #5c4272;
+        color: white;
+      }
+      button {
+        padding: 10px 15px;
+        background-color: #230e6d;
+        color: white;
+        border: 1px solid #3b1a78;
+        border-radius: 5px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      button:hover {
+        background-color: #5c4272;
+        color: white;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: auto;
+        background: rgb(224, 215, 245);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      .container table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .container table th, .container table td {
+        padding: 10px;
+        text-align: left;
+      }
+
+      .container table th {
+        background-color: #3b1a78;
+        color: white;
+      }
+
+      .container table tr:nth-child(even) {
+        background-color: #f0f0f0;
+      }
+      
+      .container table tr:hover {
+        background-color: #9a6eac;
+      }
+      
+    </style>
 </head>
 <body>
-  <h1>List of available products</h1>
-
-  <% if (products.length === 0) { %>
-    <p>No products are currently in the offer.</p>
-  <% } else { %>
-    <table border="1">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Description</th>
-          <th>Add to cart</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% products.forEach(product => { %>
+  <div class="container">
+    <h1>List of available products</h1>
+    <a href="/products/search">Did not find what you were looking for? Try searching</a>
+    <br /><br />
+    <% if (products.length === 0) { %>
+      <p>No products are currently in the offer.</p>
+    <% } else { %>
+      <table border="1">
+        <thead>
           <tr>
-            <td><%= product.id %></td>
-            <td><%= product.name %></td>
-            <td><%= product.price %> zł</td>
-            <td><%= product.description %></td>
-            <td>
-              <% if (user) { %>
-                <form action="/cart/add" method="POST">
-                  <input type="hidden" name="productId" value="<%= product.id %>">
-                  <input type="number" name="quantity" value="1" min="1" required>
-                  <button type="submit">Add</button>
-                </form>
-              <% } else { %>
-                <p>You need to be logged in to add to a cart</p>
-              <% } %>
-            </td>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Add to cart</th>
           </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  <% } %>
-
-  <br>
-  <br /><br />
-  <a href="/cart">If you are logged, you can check your cart here</a>
-  <br /><br />
-  <a href="/">Back to the index page</a>
-  <br /><br />
-  <a href="/admin/users">See users list</a>
-  <br /><br />
-  <a href="/products/add">Add new product to the offer</a>
-  <br /><br />
-  <a href="/products/remove">Remove a product from the offer</a>
+        </thead>
+        <tbody>
+          <% products.forEach(product => { %>
+            <tr>
+              <td><%= product.id %></td>
+              <td><%= product.name %></td>
+              <td><strong><%= product.price %> zł</strong></td>
+              <td><%= product.description %></td>
+              <td>
+                <% if (user) { %>
+                  <form action="/cart/add" method="POST">
+                    <input type="hidden" name="productId" value="<%= product.id %>">
+                    <input type="number" name="quantity" value="1" min="1" required>
+                    <button type="submit">Add</button>
+                  </form>
+                <% } else { %>
+                  <p>You need to be logged in to add to a cart</p>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+    <br /><br />
+    <a href="/cart">If you are logged, you can check your cart here</a>
+    <br /><br />
+    <a href="/">Back to the index page</a>
+    <br /><br />
+    <a href="/admin/users">See users list</a>
+    <br /><br />
+    <a href="/products/add">Add new product to the offer</a>
+    <br /><br />
+    <a href="/products/remove">Remove a product from the offer</a>
+  </div>
 </body>
 </html>

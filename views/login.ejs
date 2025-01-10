@@ -40,6 +40,21 @@
         background-color: #5c4272;
         color: white;
       }
+      button {
+        padding: 10px 15px;
+        background-color: #230e6d;
+        color: white;
+        border: 1px solid #3b1a78;
+        border-radius: 5px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      button:hover {
+        background-color: #5c4272;
+        color: white;
+      }
 
       .container {
         max-width: 600px;
@@ -49,39 +64,23 @@
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
-
-      .privileged-section {
-        margin-top: 40px;
-        padding-top: 20px;
-        border-top: 1px solid #909090;
-      }
-
-      .privileged-section h1 {
-        color: #5d1fda;
-      }
-
-      .link-group {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
     </style>
   </head>
   <body>
-    <h1>Log in</h1>
+    <div class="container">
+      <h1>Log in</h1>
+      <form action="/users/login" method="post">
+        <label for="username">Username</label>
+        <input type="username" id="username" name="username" required />
+        <br /><br />
 
-    <!-- Formularz logowania -->
-    <form action="/users/login" method="post">
-      <label for="username">Username</label>
-      <input type="username" id="username" name="username" required />
-      <br /><br />
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+        <br /><br />
 
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required />
-      <br /><br />
-
-      <button type="submit">Submit</button>
-    </form>
+        <button type="submit">Submit</button>
+      </form>
+    <div>
     <br /><br />
     <a href="/">Back to the index page</a>
   </body>
